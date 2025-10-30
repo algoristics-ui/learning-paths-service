@@ -19,11 +19,7 @@ export async function GET(
       );
     }
 
-    logger.info('Fetching learning path details', { 
-      userId: user.userId, 
-      organizationId: user.organizationId,
-      pathId 
-    });
+    logger.info(`Fetching learning path details: userId=${user.userId}, organizationId=${user.organizationId}, pathId=${pathId}`);
 
     // Get learning path with user enrollment status
     const pathQuery = `
@@ -82,7 +78,7 @@ export async function GET(
 
     // Calculate next milestone
     const nextMilestone = milestones.find(m => 
-      m.courses.some(c => c.status === 'available' || c.status === 'in_progress')
+      m.courses.some((c: any) => c.status === 'available' || c.status === 'in_progress')
     )?.title || null;
 
     const learningPath: LearningPath = {
@@ -108,11 +104,7 @@ export async function GET(
       updatedAt: row.updated_at
     };
 
-    logger.info('Learning path details fetched successfully', { 
-      userId: user.userId,
-      pathId,
-      pathTitle: learningPath.title
-    });
+    logger.info(`Learning path details fetched successfully: userId=${user.userId}, pathId=${pathId}, pathTitle=${learningPath.title}`);
 
     return NextResponse.json({
       success: true,
@@ -120,7 +112,7 @@ export async function GET(
     });
 
   } catch (error: any) {
-    logger.error('Error fetching learning path details', { error: error.message, pathId: params.pathId });
+    logger.error(`Error fetching learning path details: ${error.message}, pathId=${params.pathId}`);
     
     if (error.message === 'Missing Bearer token' || error.message === 'Invalid token') {
       return NextResponse.json(

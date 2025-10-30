@@ -18,11 +18,7 @@ export async function POST(
       );
     }
 
-    logger.info('Generating certificate for learning path', { 
-      userId: user.userId, 
-      organizationId: user.organizationId,
-      pathId 
-    });
+    logger.info(`Generating certificate for learning path: userId=${user.userId}, organizationId=${user.organizationId}, pathId=${pathId}`);
 
     // Check if user has completed the path
     const completionCheckQuery = `
@@ -72,11 +68,7 @@ export async function POST(
     if (existingCertResult.rows.length > 0) {
       const cert = existingCertResult.rows[0];
       
-      logger.info('Certificate already exists', { 
-        userId: user.userId,
-        pathId,
-        certificateId: cert.certificate_id
-      });
+      logger.info(`Certificate already exists: userId=${user.userId}, pathId=${pathId}, certificateId=${cert.certificate_id}`);
 
       return NextResponse.json({
         success: true,
@@ -110,11 +102,7 @@ export async function POST(
 
     const certificate = certResult.rows[0];
 
-    logger.info('Certificate generated successfully', { 
-      userId: user.userId,
-      pathId,
-      certificateId: certificate.certificate_id
-    });
+    logger.info(`Certificate generated successfully: userId=${user.userId}, pathId=${pathId}, certificateId=${certificate.certificate_id}`);
 
     return NextResponse.json({
       success: true,
@@ -127,7 +115,7 @@ export async function POST(
     });
 
   } catch (error: any) {
-    logger.error('Error generating certificate', { error: error.message, pathId: params.pathId });
+    logger.error(`Error generating certificate: ${error.message}, pathId=${params.pathId}`);
     
     if (error.message === 'Missing Bearer token' || error.message === 'Invalid token') {
       return NextResponse.json(

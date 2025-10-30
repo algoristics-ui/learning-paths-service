@@ -10,11 +10,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status');
 
-    logger.info('Fetching user enrollments', { 
-      userId: user.userId, 
-      organizationId: user.organizationId,
-      statusFilter: status
-    });
+    logger.info(`Fetching user enrollments: userId=${user.userId}, organizationId=${user.organizationId}, statusFilter=${status}`);
 
     // Build query with optional status filter
     let whereCondition = 'ue.user_id = $1 AND lp.organization_id = $2';
@@ -98,7 +94,7 @@ export async function GET(req: NextRequest) {
         }));
 
         const nextMilestone = milestones.find(m => 
-          m.courses.some(c => c.status === 'available' || c.status === 'in_progress')
+          m.courses.some((c: any) => c.status === 'available' || c.status === 'in_progress')
         )?.title || null;
 
         return {
@@ -132,10 +128,7 @@ export async function GET(req: NextRequest) {
       })
     );
 
-    logger.info('User enrollments fetched successfully', { 
-      userId: user.userId,
-      enrollmentsCount: enrollments.length
-    });
+    logger.info(`User enrollments fetched successfully: userId=${user.userId}, enrollmentsCount=${enrollments.length}`);
 
     return NextResponse.json({
       success: true,
@@ -143,7 +136,7 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error: any) {
-    logger.error('Error fetching user enrollments', { error: error.message });
+    logger.error(`Error fetching user enrollments: ${error.message}`);
     
     if (error.message === 'Missing Bearer token' || error.message === 'Invalid token') {
       return NextResponse.json(

@@ -1,0 +1,14 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/learning-paths/[pathId]/rewards/route": "app/api/learning-paths/[pathId]/rewards/route.js",
+  "/api/learning-paths/[pathId]/route": "app/api/learning-paths/[pathId]/route.js",
+  "/api/learning-paths/[pathId]/certificate/route": "app/api/learning-paths/[pathId]/certificate/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/api/learning-paths/enroll/route": "app/api/learning-paths/enroll/route.js",
+  "/api/learning-paths/progress/route": "app/api/learning-paths/progress/route.js",
+  "/api/learning-paths/stats/route": "app/api/learning-paths/stats/route.js",
+  "/api/learning-paths/enrollments/route": "app/api/learning-paths/enrollments/route.js",
+  "/api/version/route": "app/api/version/route.js",
+  "/page": "app/page.js",
+  "/api/learning-paths/route": "app/api/learning-paths/route.js"
+}

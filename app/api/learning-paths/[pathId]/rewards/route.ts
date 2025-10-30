@@ -18,11 +18,7 @@ export async function GET(
       );
     }
 
-    logger.info('Fetching rewards for learning path', { 
-      userId: user.userId, 
-      organizationId: user.organizationId,
-      pathId 
-    });
+    logger.info(`Fetching rewards for learning path: userId=${user.userId}, organizationId=${user.organizationId}, pathId=${pathId}`);
 
     // Get path information and completion status
     const pathQuery = `
@@ -73,13 +69,7 @@ export async function GET(
       }
     };
 
-    logger.info('Rewards fetched successfully', { 
-      userId: user.userId,
-      pathId,
-      rewardsCount: badges.length,
-      points,
-      certificateAvailable
-    });
+    logger.info(`Rewards fetched successfully: userId=${user.userId}, pathId=${pathId}, rewardsCount=${badges.length}, points=${points}, certificateAvailable=${certificateAvailable}`);
 
     return NextResponse.json({
       success: true,
@@ -87,7 +77,7 @@ export async function GET(
     });
 
   } catch (error: any) {
-    logger.error('Error fetching rewards', { error: error.message, pathId: params.pathId });
+    logger.error(`Error fetching rewards: ${error.message}, pathId=${params.pathId}`);
     
     if (error.message === 'Missing Bearer token' || error.message === 'Invalid token') {
       return NextResponse.json(

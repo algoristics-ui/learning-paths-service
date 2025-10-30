@@ -17,11 +17,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    logger.info('Enrolling user in learning path', { 
-      userId: user.userId, 
-      organizationId: user.organizationId,
-      pathId 
-    });
+    logger.info(`Enrolling user in learning path: userId=${user.userId}, organizationId=${user.organizationId}, pathId=${pathId}`);
 
     // Check if path exists and belongs to user's organization
     const pathCheckQuery = `
@@ -81,11 +77,7 @@ export async function POST(req: NextRequest) {
 
     const enrolledAt = enrollmentResult.rows[0].enrolled_at;
 
-    logger.info('User enrolled successfully', { 
-      userId: user.userId,
-      pathId,
-      enrolledAt
-    });
+    logger.info(`User enrolled successfully: userId=${user.userId}, pathId=${pathId}, enrolledAt=${enrolledAt}`);
 
     return NextResponse.json({
       success: true,
@@ -99,7 +91,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error: any) {
-    logger.error('Error enrolling user in learning path', { error: error.message });
+    logger.error(`Error enrolling user in learning path: ${error.message}`);
     
     if (error.message === 'Missing Bearer token' || error.message === 'Invalid token') {
       return NextResponse.json(

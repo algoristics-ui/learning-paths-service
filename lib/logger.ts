@@ -1,31 +1,32 @@
-import fs from 'fs';
-import path from 'path';
+import { SignJWT } from 'jose';
 
-const logDir = path.join(process.cwd(), '../../logs/services');
-const logFile = path.join(logDir, 'learning-paths-service.log');
+async function getToken(): Promise<string> {
+  const secret = process.env.JWT_SECRET || 'dev_jwt_secret_change_me';
+  const encoder = new TextEncoder();
+  return await new SignJWT({ sub: 'learning-paths-service' })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('10m')
+    .sign(encoder.encode(secret));
+}
 
-// Ensure log directory exists
-if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir, { recursive: true });
+async function send(level: 'INFO' | 'DEBUG' | 'WARN' | 'ERROR', message: string) {
+  const endpoint = process.env.LOGGING_ENDPOINT || 'http://localhost:4010/api/logs';
+  const token = await getToken();
+  try {
+    await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
+      body: JSON.stringify({ app: 'learning-paths-service', level, message }),
+    });
+  } catch {
+    // swallow logging errors in service paths
+  }
 }
 
 export const logger = {
-  info: (message: string, meta?: any) => {
-    const timestamp = new Date().toISOString();
-    const logEntry = `${timestamp} [INFO] ${message} ${meta ? JSON.stringify(meta) : ''}\n`;
-    fs.appendFileSync(logFile, logEntry);
-    console.log(logEntry.trim());
-  },
-  error: (message: string, meta?: any) => {
-    const timestamp = new Date().toISOString();
-    const logEntry = `${timestamp} [ERROR] ${message} ${meta ? JSON.stringify(meta) : ''}\n`;
-    fs.appendFileSync(logFile, logEntry);
-    console.error(logEntry.trim());
-  },
-  debug: (message: string, meta?: any) => {
-    const timestamp = new Date().toISOString();
-    const logEntry = `${timestamp} [DEBUG] ${message} ${meta ? JSON.stringify(meta) : ''}\n`;
-    fs.appendFileSync(logFile, logEntry);
-    console.log(logEntry.trim());
-  }
+  info: (m: string) => send('INFO', m),
+  debug: (m: string) => send('DEBUG', m),
+  warn: (m: string) => send('WARN', m),
+  error: (m: string) => send('ERROR', m),
 };

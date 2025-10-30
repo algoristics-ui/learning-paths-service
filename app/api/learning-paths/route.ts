@@ -16,11 +16,7 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = (page - 1) * limit;
 
-    logger.info('Fetching learning paths', { 
-      userId: user.userId, 
-      organizationId: user.organizationId,
-      filters: { status, category, difficulty, page, limit }
-    });
+    logger.info(`Fetching learning paths: userId=${user.userId}, organizationId=${user.organizationId}, filters=${JSON.stringify({ status, category, difficulty, page, limit })}`);
 
     // Build dynamic query with filters
     let whereConditions = ['lp.organization_id = $1'];
@@ -113,7 +109,7 @@ export async function GET(req: NextRequest) {
 
         // Calculate next milestone
         const nextMilestone = milestones.find(m => 
-          m.courses.some(c => c.status === 'available' || c.status === 'in_progress')
+          m.courses.some((c: any) => c.status === 'available' || c.status === 'in_progress')
         )?.title || null;
 
         return {
@@ -143,13 +139,7 @@ export async function GET(req: NextRequest) {
 
     const totalPages = Math.ceil(total / limit);
 
-    logger.info('Learning paths fetched successfully', { 
-      userId: user.userId,
-      pathsCount: paths.length,
-      total,
-      page,
-      totalPages
-    });
+    logger.info(`Learning paths fetched successfully: userId=${user.userId}, pathsCount=${paths.length}, total=${total}, page=${page}, totalPages=${totalPages}`);
 
     return NextResponse.json({
       success: true,
@@ -165,7 +155,7 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error: any) {
-    logger.error('Error fetching learning paths', { error: error.message });
+    logger.error(`Error fetching learning paths: ${error.message}`);
     
     if (error.message === 'Missing Bearer token' || error.message === 'Invalid token') {
       return NextResponse.json(

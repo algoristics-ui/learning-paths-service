@@ -17,11 +17,7 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    logger.info('Updating course progress', { 
-      userId: user.userId, 
-      courseId,
-      status
-    });
+    logger.info(`Updating course progress: userId=${user.userId}, courseId=${courseId}, status=${status}`);
 
     // Get course and path information
     const courseInfoQuery = `
@@ -206,13 +202,7 @@ export async function PUT(req: NextRequest) {
 
     const nextUnlockedCourse = nextUnlockedResult.rows[0] || null;
 
-    logger.info('Course progress updated successfully', { 
-      userId: user.userId,
-      courseId,
-      newStatus: status,
-      pathProgress,
-      pathStatus
-    });
+    logger.info(`Course progress updated successfully: userId=${user.userId}, courseId=${courseId}, newStatus=${status}, pathProgress=${pathProgress}, pathStatus=${pathStatus}`);
 
     return NextResponse.json({
       success: true,
@@ -226,7 +216,7 @@ export async function PUT(req: NextRequest) {
     });
 
   } catch (error: any) {
-    logger.error('Error updating course progress', { error: error.message });
+    logger.error(`Error updating course progress: ${error.message}`);
     
     if (error.message === 'Missing Bearer token' || error.message === 'Invalid token') {
       return NextResponse.json(

@@ -8,10 +8,7 @@ export async function GET(req: NextRequest) {
   try {
     const user = await getUserFromToken(req);
 
-    logger.info('Fetching learning path stats', { 
-      userId: user.userId, 
-      organizationId: user.organizationId
-    });
+    logger.info(`Fetching learning path stats: userId=${user.userId}, organizationId=${user.organizationId}`);
 
     // Get user's enrollment statistics
     const statsQuery = `
@@ -39,10 +36,7 @@ export async function GET(req: NextRequest) {
       certificates: parseInt(statsResult.rows[0]?.certificates || '0')
     };
 
-    logger.info('Learning path stats fetched successfully', { 
-      userId: user.userId,
-      stats
-    });
+    logger.info(`Learning path stats fetched successfully: userId=${user.userId}, stats=${JSON.stringify(stats)}`);
 
     return NextResponse.json({
       success: true,
@@ -50,7 +44,7 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error: any) {
-    logger.error('Error fetching learning path stats', { error: error.message });
+    logger.error(`Error fetching learning path stats: ${error.message}`);
     
     if (error.message === 'Missing Bearer token' || error.message === 'Invalid token') {
       return NextResponse.json(
