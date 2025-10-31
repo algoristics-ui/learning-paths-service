@@ -3,9 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "next dev -p 4011",
+    "dev": "next dev -p ${PORT:-4011}",
     "build": "next build",
-    "start": "next start -p 4011"
+    "start": "next start -p ${PORT:-8080}"
   },
   "dependencies": {
     "dotenv": "^17.2.2",
